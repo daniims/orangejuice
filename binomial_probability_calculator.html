@@ -3,106 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Binomial Distribution Calculator</title>
+    <title>Binomial Calculator</title>
 </head>
 <body>
-    <h1>Binomial Distribution Calculator</h1>
-    <p>This is a calculator for binomial distribution originally created in Python.<br> To use it, enter a value in each of the first three text boxes and click the Calculate button.</p>
-    <form id="binomialForm">
-        <label for="continueInput">Do you wish to use the calculator? (yes or no):</label>
-        <input type="text" id="continueInput" name="continueInput">
-        <br>
-        <label for="trialsInput">Number of trials:</label>
-        <input type="number" id="trialsInput" name="trialsInput">
-        <br>
-        <label for="successInput">Number of successes:</label>
-        <input type="number" id="successInput" name="successInput">
-        <br>
-        <label for="probabilityInput">Probability of success (%):</label>
-        <input type="number" id="probabilityInput" name="probabilityInput">
-        <br>
-        <label for="varInput">=, &gt;, ≥, &lt;, or ≤ for binomial or cumulative probability:</label>
-        <input type="text" id="varInput" name="varInput">
-        <br>
-        <button type="button" onclick="calculate()">Calculate</button>
-    </form>
+    <h1>Binomial Calculator</h1>
+    <p>This is a calculator for the binomial distribution.</p>
+    
+    <button id="startButton">Start Calculator</button>
 
     <script>
-        function calculate() {
-            var n = parseInt(document.getElementById('trialsInput').value);
-            var x = parseInt(document.getElementById('successInput').value);
-            var r = parseFloat(document.getElementById('probabilityInput').value) / 100;
-            var varValue = document.getElementById('varInput').value;
-            var p = 0;
-            var a = x;
+        document.addEventListener("DOMContentLoaded", function() {
+            var startButton = document.getElementById('startButton');
 
-            var continueValue = document.getElementById('continueInput').value;
+            startButton.addEventListener('click', function() {
+                var proceed = confirm("Do you wish to use the calculator?");
+                if (proceed) {
+                    var n = parseInt(prompt("Number of trials:"));
+                    var x = parseInt(prompt("Number of successes:"));
+                    var r = parseFloat(prompt("Probability of success (%):")) / 100;
+                    var varType = prompt("Enter =, >, ≥, <, or ≤ for binomial or cumulative probability:");
 
-            while (continueValue.toLowerCase() === "yes") {
-                if (varValue !== "=") {
-                    while (0 < x && x <= n) {
-                        if (varValue === ">") {
-                            x++;
-                        }
-                        if (varValue === "<") {
-                            x--;
-                        }
+                    if (!isNaN(n) && !isNaN(x) && !isNaN(r) && varType) {
+                        var p = 0;
+                        var a = x;
 
-                        p += (binomialCoefficient(n, x) * Math.pow(r, x) * Math.pow((1 - r), (n - x)));
+                        while (proceed) {
+                            if (varType !== "=") {
+                                while (0 < x && x <= n) {
+                                    if (varType === ">") {
+                                        x++;
+                                    }
+                                    if (varType === "<") {
+                                        x--;
+                                    }
+                                    p += (binomialCoefficient(n, x) * Math.pow(r, x) * Math.pow((1 - r), (n - x)));
+                                    if (varType === "≤") {
+                                        x--;
+                                    }
+                                    if (varType === "≥") {
+                                        x++;
+                                    }
+                                }
+                            }
 
-                        if (varValue === "≤") {
-                            x--;
+                            if (varType === "≤") {
+                                p += binomialCoefficient(n, 0) * Math.pow(r, x) * Math.pow((1 - r), (n - 0));
+                                alert("Cumulative probability when x " + varType + " " + a + ": " + p);
+                            }
+
+                            if (varType === "=") {
+                                p = binomialCoefficient(n, x) * Math.pow(r, x) * Math.pow((1 - r), (n - x));
+                                alert("Binomial probability when x " + varType + " " + a + ": " + p);
+                            }
+
+                            if (varType === "≥" || varType === ">") {
+                                alert("Cumulative probability when x " + varType + " " + a + ": " + p);
+                            }
+                            if (varType === "<") {
+                                alert("Cumulative probability when x " + varType + " " + a + ": " + p);
+                            }
+
+                            proceed = confirm("Continue?");
+                            if (proceed) {
+                                varType = prompt("Enter =, >, ≥, <, or ≤ for binomial or cumulative probability:");
+                            }
                         }
-                        if (varValue === "≥") {
-                            x++;
-                        }
+                    } else {
+                        alert("Invalid input. Please enter valid numbers and type.");
                     }
                 }
+            });
 
-                if (varValue === "≤") {
-                    p += binomialCoefficient(n, 0) * Math.pow(r, x) * Math.pow((1 - r), (n - 0));
-                    console.log("Cumulative probability when x" + varValue + a + ": " + p);
+            // Function to calculate binomial coefficient
+            function binomialCoefficient(n, k) {
+                if (k === 0 || k === n) {
+                    return 1;
+                } else {
+                    var numerator = 1;
+                    for (var i = n; i > Math.max(k, n - k); i--) {
+                        numerator *= i;
+                    }
+                    var denominator = 1;
+                    for (var j = 1; j <= Math.min(k, n - k); j++) {
+                        denominator *= j;
+                    }
+                    return numerator / denominator;
                 }
-
-                if (varValue === "=") {
-                    p = binomialCoefficient(n, x) * Math.pow(r, x) * Math.pow((1 - r), (n - x));
-                    console.log("Binomial probability when x" + varValue + a + ": " + p);
-                }
-
-                if (varValue === "≥" || varValue === ">") {
-                    console.log("Cumulative probability when x" +
-                    p);
-                }
-                if (varValue === "<") {
-                    console.log("Cumulative probability when x" + varValue + a + ": " + p);
-                }
-
-                continueValue = prompt("Continue? (yes or no): ");
-
-                if (continueValue.toLowerCase() === "no") {
-                    break;
-                }
-
-                varValue = prompt("=, >, ≥, <, or ≤ for binomial or cumulative probability: ");
             }
-        }
-
-        // Function to calculate binomial coefficient
-        function binomialCoefficient(n, k) {
-            if (k === 0 || k === n) {
-                return 1;
-            } else {
-                var numerator = 1;
-                for (var i = n; i > Math.max(k, n - k); i--) {
-                    numerator *= i;
-                }
-                var denominator = 1;
-                for (var j = 1; j <= Math.min(k, n - k); j++) {
-                    denominator *= j;
-                }
-                return numerator / denominator;
-            }
-        }
+        });
     </script>
 </body>
 </html>
+
