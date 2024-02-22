@@ -3,84 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Poisson Distribution Calculator</title>
+    <title>Poisson Calculator Bot</title>
+    <style>
+        .chat-container {
+            width: 400px;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+        }
+        .user-msg {
+            text-align: right;
+            color: blue;
+        }
+        .bot-msg {
+            text-align: left;
+            color: green;
+        }
+    </style>
 </head>
 <body>
-    <h1>Poisson Distribution Calculator</h1>
-    <p>This is a calculator for Poisson distribution originally created in Python.<br> To use it, enter a value in each of the first two text boxes and click the Calculate button.</p>
-    <form id="poissonForm">
-        <label for="proceedInput">Do you wish to use the calculator? (yes or no):</label>
-        <input type="text" id="proceedInput" name="proceedInput">
-        <br>
-        <label for="randomVariableInput">Poisson random variable (x):</label>
-        <input type="number" id="randomVariableInput" name="randomVariableInput">
-        <br>
-        <label for="rateOfSuccessInput">Average rate of success (μ):</label>
-        <input type="number" id="rateOfSuccessInput" name="rateOfSuccessInput">
-        <br>
-        <label for="varInput">=, >, ≥, <, or ≤ for binomial or cumulative probability:</label>
-        <input type="text" id="varInput" name="varInput">
-        <br>
-        <button type="button" onclick="calculate()">Calculate</button>
-    </form>
+    <div class="chat-container">
+        <div class="bot-msg">
+            <p>Hi there! I'm Poisson Calculator Bot. How can I assist you today?</p>
+        </div>
+    </div>
 
     <script>
-        function calculate() {
-            var x = parseInt(document.getElementById('randomVariableInput').value);
-            var μ = parseFloat(document.getElementById('rateOfSuccessInput').value);
-            var varValue = document.getElementById('varInput').value;
-            var p = 0;
-            var a = x;
+        document.addEventListener("DOMContentLoaded", function() {
+            const chatContainer = document.querySelector(".chat-container");
 
-            var proceedValue = document.getElementById('proceedInput').value;
-
-            while (proceedValue.toLowerCase() === "yes") {
-                if (varValue !== "=") {
-                    while (x > 0) {
-                        p += (Math.pow(μ, x) / factorial(x) * Math.exp(-μ));
-                        x -= 1;
-                    }
-                }
-
-                if (varValue === ">") {
-                    p = 1 - p;
-                    console.log("Probability when x" + varValue + a + ": " + p);
-                }
-
-                if (varValue === "≥") {
-                    p += (Math.pow(μ, a) / factorial(a) * Math.exp(-μ));
-                    p = 1 - p;
-                    console.log("Probability when x" + varValue + a + ": " + p);
-                }
-
-                if (varValue === "≤") {
-                    p += (Math.pow(μ, 0) / factorial(0) * Math.exp(-μ));
-                    console.log("Probability when x" + varValue + a + ": " + p);
-                }
-
-                if (varValue === "=") {
-                    p = (Math.pow(μ, a) / factorial(a) * Math.exp(-μ));
-                    console.log("Probability when x" + varValue + a + ": " + p);
-                }
-
-                proceedValue = prompt("Continue? (yes or no): ");
-
-                if (proceedValue.toLowerCase() === "no") {
-                    break;
-                }
-
-                varValue = prompt("=, >, ≥, <, or ≤ for binomial or cumulative probability: ");
+            function appendUserMessage(message) {
+                const userMsgElement = document.createElement("div");
+                userMsgElement.classList.add("user-msg");
+                userMsgElement.innerHTML = `<p>User: ${message}</p>`;
+                chatContainer.appendChild(userMsgElement);
             }
-        }
 
-        // Function to calculate factorial
-        function factorial(n) {
-            if (n === 0 || n === 1) {
-                return 1;
-            } else {
-                return n * factorial(n - 1);
+            function appendBotMessage(message) {
+                const botMsgElement = document.createElement("div");
+                botMsgElement.classList.add("bot-msg");
+                botMsgElement.innerHTML = `<p>Poisson Calculator Bot: ${message}</p>`;
+                chatContainer.appendChild(botMsgElement);
             }
-        }
+
+            function calculatePoisson(x, mu) {
+                const numerator = Math.pow(mu, x) * Math.exp(-mu);
+                const denominator = factorial(x);
+                return numerator / denominator;
+            }
+
+            function factorial(n) {
+                if (n === 0 || n === 1) {
+                    return 1;
+                } else {
+                    return n * factorial(n - 1);
+                }
+            }
+
+            function processUserInput(input) {
+                const tokens = input.split(' ');
+                if (tokens.length !== 2) {
+                    return 'Invalid input. Please enter in the format: x mu';
+                }
+                const x = parseInt(tokens[0]);
+                const mu = parseFloat(tokens[1]);
+
+                if (isNaN(x) || isNaN(mu)) {
+                    return 'Invalid numbers provided.';
+                }
+
+                const result = calculatePoisson(x, mu);
+                return `The Poisson probability for x = ${x} and μ = ${mu} is ${result.toFixed(4)}`;
+            }
+
+            function handleUserInput() {
+                const userInput = prompt("Enter the value of x and μ (e.g., '2 3'):");
+                if (userInput) {
+                    appendUserMessage(userInput);
+                    const botResponse = processUserInput(userInput);
+                    appendBotMessage(botResponse);
+                }
+            }
+
+            // Initial prompt
+            handleUserInput();
+        });
     </script>
 </body>
 </html>
