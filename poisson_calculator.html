@@ -23,11 +23,15 @@
 
                     if (!isNaN(x) && !isNaN(mu)) {
                         var varType = prompt("Enter =, >, ≥, <, or ≤ for binomial or cumulative probability:");
-                        var result = calculatePoisson(x, mu, varType);
-                        if (result !== null) {
-                            alert('The Poisson probability for x ' + varType + ' ' + x + ' and μ = ' + mu + ' is ' + result.toFixed(4));
+                        if (varType === '=' || varType === '>' || varType === '≥' || varType === '<' || varType === '≤') {
+                            var result = calculatePoisson(x, mu, varType);
+                            if (result !== null) {
+                                alert('The Poisson probability for x ' + varType + ' ' + x + ' and μ = ' + mu + ' is ' + result.toFixed(4));
+                            } else {
+                                alert('Invalid type of probability entered.');
+                            }
                         } else {
-                            alert('Invalid type of probability entered.');
+                            alert('Invalid type of probability entered. Please enter =, >, ≥, <, or ≤.');
                         }
                     } else {
                         alert('Invalid input. Please enter valid numbers.');
@@ -68,4 +72,3 @@
     </script>
 </body>
 </html>
-
