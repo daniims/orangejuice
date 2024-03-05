@@ -18,27 +18,43 @@
             startButton.addEventListener('click', function() {
                 var proceed = confirm("Do you wish to use the calculator?");
                 if (proceed) {
-                    var x = prompt("Enter the value of x (Poisson random variable):");
-                    var mu = prompt("Enter the value of μ (Average rate of success):");
+                    var x = parseFloat(prompt("Poisson random variable (x):"));
+                    var mu = parseFloat(prompt("Average rate of success (μ):"));
 
-                    if (x !== null && mu !== null) {
-                        x = parseInt(x);
-                        mu = parseFloat(mu);
-
-                        if (!isNaN(x) && !isNaN(mu)) {
-                            var result = calculatePoissonProbability(x, mu);
-                            alert('The Poisson probability for x = ' + x + ' and μ = ' + mu + ' is ' + result.toFixed(4));
+                    if (!isNaN(x) && !isNaN(mu)) {
+                        var varType = prompt("Enter =, >, ≥, <, or ≤ for binomial or cumulative probability:");
+                        var result = calculatePoisson(x, mu, varType);
+                        if (result !== null) {
+                            alert('The Poisson probability for x ' + varType + ' ' + x + ' and μ = ' + mu + ' is ' + result.toFixed(4));
                         } else {
-                            alert('Invalid input. Please enter valid numbers.');
+                            alert('Invalid type of probability entered.');
                         }
+                    } else {
+                        alert('Invalid input. Please enter valid numbers.');
                     }
                 }
             });
 
-            function calculatePoissonProbability(x, mu) {
-                var numerator = Math.pow(mu, x) * Math.exp(-mu);
-                var denominator = factorial(x);
-                return numerator / denominator;
+            function calculatePoisson(x, mu, varType) {
+                if (varType === "=") {
+                    return Math.pow(mu, x) * Math.exp(-mu) / factorial(x);
+                } else if (varType === "<") {
+                    var sum = 0;
+                    for (var i = 0; i < x; i++) {
+                        sum += Math.pow(mu, i) * Math.exp(-mu) / factorial(i);
+                    }
+                    return sum;
+                } else if (varType === ">") {
+                    var sum = 0;
+                    for (var i = x + 1; ; i++) {
+                        var term = Math.pow(mu, i) * Math.exp(-mu) / factorial(i);
+                        if (term < 0.0001) break; // stopping condition to avoid infinite loop
+                        sum += term;
+                    }
+                    return sum;
+                } else {
+                    return null;
+                }
             }
 
             function factorial(n) {
@@ -52,3 +68,4 @@
     </script>
 </body>
 </html>
+
